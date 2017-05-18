@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Weights Timer</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+
+body {
+    /*font-family: "DejaVu Sans Mono", "Dejavu Sans", monospace;*/
+    font-family: "Dejavu Sans", monospace;
+    text-align: center;
+    margin: 0rem;
+    padding: 0rem;
+}
+
+#sets-counter {
+    font-size: 3rem;
+    margin-top: 0.25rem;
+}
+#finished-set-button {
+    font-size: 4rem;
+    margin: 0.25rem 0rem;
+    padding: 6rem 0rem;
+    background-color: #eee8d5;
+}
+#time-remaining {
+    font-size: 10rem;
+    margin: 0.25rem 0rem;
+    padding: 6rem 0rem;
+}
+#workout-done {
+    color: #268bd2;
+    font-weight: bold;
+    font-size: 8rem;
+    margin: 0.25rem 0rem;
+    padding: 6rem 0rem;
+}
+
+        </style>
+        <script>
+
+// notifications
+var vibratePattern = [1000, 500, 500];
+
+// clock
+var restSecs = 0;
+var checkIntervalMs = 10;
+
+// sets count
+var finishedSets = 0;
+var totalSets = 0;
+
+// states
+var state_doingSet = 1;
+var state_resting = 2;
+var state_workoutDone = 3;
+
+function initialize() {
+    totalSets = getParameterByName("s") || 4;
+    restSecs = getParameterByName("r") * 60 || 5;
+    console.log(getParameterByName("foo"));
+    drawState(state_doingSet);
+}
+
+function event_finishedSet() {
+    finishedSets++;
+    if( finishedSets == totalSets ) {
+        drawState(state_workoutDone);
+        return
+    }
+    drawState(state_resting);
+    begin = new Date();
+    end = new Date(begin.getTime() + restSecs * 1000);
+    setTimeout(function() { tickTimer(begin, end)}, checkIntervalMs);
+}
+
+function tickTimer(begin, end) {
+    setHtml("time-remaining", prettyTime(end));
+    if( new Date() >= end ) {
+        drawState(state_doingSet);
+        window.navigator.vibrate(vibratePattern);
+        return
+    }
+    setTimeout(function() { tickTimer(begin, end)}, checkIntervalMs);
+}
+
+function prettyTime(end) {
+    var totalSecs = Math.ceil((end - new Date())/1000);
+    var secs = totalSecs % 60;
+    var mins = (totalSecs - secs)/60;
+    if( secs < 10 ) {
+        secs = "0" + secs;
+    }
+    return mins + ":" + secs;
+}
+
+// solarized: http://ethanschoonover.com/solarized
+var base03  = "#002b36";
+var base02  = "#073642";
+var base01  = "#586e75";
+var base00  = "#657b83";
+var base0   = "#839496";
+var base1   = "#93a1a1";
+var base2   = "#eee8d5";
+var base3   = "#fdf6e3";
+var yellow  = "#b58900";
+var orange  = "#cb4b16";
+var red     = "#dc322f";
+var magenta = "#d33682";
+var violet  = "#6c71c4";
+var blue    = "#268bd2";
+var cyan    = "#2aa198";
+var green   = "#859900";
+
+function drawState(state) {
+    setHtml("finished-sets", finishedSets)
+    setHtml("total-sets", totalSets);
+    hide("finished-set-button")
+    hide("time-remaining");
+    hide("workout-done");
+    switch(state) {
+        case state_doingSet:
+            show("finished-set-button")
+            document.body.style.backgroundColor = base3;
+            document.body.style.color = base00;
+            document.getElementById("sets-counter").style.color = base1;
+            break;
+        case state_resting:
+            show("time-remaining");
+            document.body.style.backgroundColor = base03;
+            document.body.style.color = base0;
+            document.getElementById("sets-counter").style.color = base01;
+            break;
+        case state_workoutDone:
+            show("workout-done");
+            document.body.style.backgroundColor = base3;
+            document.body.style.color = base00;
+            document.getElementById("sets-counter").style.color = base1;
+            break;
+    }
+}
+
+function hide(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+function show(id) {
+    document.getElementById(id).style.display = 'block';
+}
+
+function setHtml(id, html) {
+    document.getElementById(id).innerHTML = html;
+}
+
+function getStyle(id) {
+    return document.getElementById(id).style;
+}
+
+function getParameterByName(name) {
+    // src: http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(window.location.href);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+        </script>
+    </head>
+    <body onload="initialize();">
+        <div id="sets-counter">
+            <span id="finished-sets"></span>/<span id="total-sets"></span>
+        </div>
+        <div id="finished-set-button" onclick="event_finishedSet();">Finished set</div>
+        <div id="time-remaining"></div>
+        <div id="workout-done">Done</div>
+    </body>
+</html>
