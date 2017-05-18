@@ -15,7 +15,7 @@ body {
 }
 
 #sets-counter {
-    font-size: 3rem;
+    font-size: 5rem;
     margin-top: 0.25rem;
 }
 #finished-set-button {
@@ -23,6 +23,7 @@ body {
     margin: 0.25rem 0rem;
     padding: 6rem 0rem;
     background-color: #eee8d5;
+    cursor: pointer;
 }
 #time-remaining {
     font-size: 8rem;
@@ -45,7 +46,7 @@ var vibratePattern = [1000, 500, 500];
 
 // clock
 var restSecs = 0;
-var checkIntervalMs = 10;
+var checkIntervalMs = 1000;
 
 // sets count
 var finishedSets = 0;
@@ -59,7 +60,6 @@ var state_workoutDone = 3;
 function initialize() {
     totalSets = getParameterByName("s") || 4;
     restSecs = getParameterByName("r") * 60 || 5;
-    console.log(getParameterByName("foo"));
     drawState(state_doingSet);
 }
 
@@ -72,7 +72,7 @@ function event_finishedSet() {
     drawState(state_resting);
     begin = new Date();
     end = new Date(begin.getTime() + restSecs * 1000);
-    setTimeout(function() { tickTimer(begin, end)}, checkIntervalMs);
+    tickTimer(begin, end);
 }
 
 function tickTimer(begin, end) {
@@ -151,10 +151,6 @@ function show(id) {
 
 function setHtml(id, html) {
     document.getElementById(id).innerHTML = html;
-}
-
-function getStyle(id) {
-    return document.getElementById(id).style;
 }
 
 function getParameterByName(name) {
