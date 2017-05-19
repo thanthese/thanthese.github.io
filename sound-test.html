@@ -12,14 +12,21 @@
 //var audio2 = new Audio("./glass-ping.mp3");
 //audio2.play();
 
-var audio3 = document.createElement('audio');
-audio3.src = 'glass-ping.mp3'
-audio3.play();
+// var audio3 = document.createElement('audio');
+// audio3.src = 'glass-ping.mp3'
+// audio3.play();
 
+
+function foo() {
+    console.log("test");
+    var audio = new Audio("glass-ping.mp3");
+    audio.play();
+}
         </script>
     </head>
     <body>
         sound test
+        <button onclick="foo()">click</button>
     </body>
 </html>
 
