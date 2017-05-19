@@ -65,6 +65,7 @@ function initialize() {
 }
 
 function event_finishedSet() {
+    audio.play(); audio.pause();
     finishedSets++;
     if( finishedSets == totalSets ) {
         drawState(state_workoutDone);
