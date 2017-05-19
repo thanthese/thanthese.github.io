@@ -42,7 +42,7 @@ body {
         <script>
 
 // notifications
-var vibratePattern = [1000, 500, 500];
+var vibratePattern = [1000, 500, 1000];
 
 // clock
 var restSecs = 0;
@@ -80,6 +80,8 @@ function tickTimer(begin, end) {
     if( new Date() >= end ) {
         drawState(state_doingSet);
         window.navigator.vibrate(vibratePattern);
+        var audio = new Audio("glass-ping.mp3");
+        audio.play();
         return
     }
     setTimeout(function() { tickTimer(begin, end)}, checkIntervalMs);
