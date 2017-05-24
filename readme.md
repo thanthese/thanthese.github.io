@@ -1,6 +1,6 @@
 I host my static sites here. Active projects:
 
-# [Weights-timer](https://thanthese.github.io/weights-timer.html)
+# [Weights timer](https://thanthese.github.io/weights-timer.html)
 
 The simplest possible timer. A url like this:
 
