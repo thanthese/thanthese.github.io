@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Echo-er</title>
+        <style>
+body {
+    /*font-family: "DejaVu Sans Mono", "Dejavu Sans", monospace;*/
+    font-family: "Dejavu Sans", monospace;
+    text-align: center;
+    margin: 0rem;
+    padding: 0rem;
+}
+#status {
+    font-size: 3rem;
+    margin-top: 0.25rem;
+}
+.button {
+    font-size: 4rem;
+    margin: 0.25rem 0rem;
+    padding: 6rem 0rem;
+    background-color: #eee8d5;
+    cursor: pointer;
+}
+
+.pulse {
+  animation: pulse-dark 5s infinite ease-in-out;
+}
+
+@keyframes pulse-dark {
+  0%, 100% {
+    color: #657b83;
+  }
+  50% {
+    color: #073642;
+  }
+}
+        </style>
+    </head>
+    <body>
+        <audio></audio>
+        <div id="status">&nbsp;</div>
+        <div id="start-recording" class="button" onclick="startRecording()">Start recording</div>
+        <div hidden id="stop-recording" class="button" onclick="stopRecording()">Stop</div>
+
+        <script>
+
+var state_waiting = 0;
+var state_recording = 1;
+var state_playing = 2;
+
+function drawState(state) {
+    switch(state) {
+        case state_waiting:
+            document.body.style.backgroundColor = base3;
+            document.getElementById("status").style.color = base1;
+            document.getElementById("start-recording").style.backgroundColor = base2;
+            document.getElementById("start-recording").style.color = base00;
+
+            document.getElementById("status").innerHTML = "&nbsp;";
+            break;
+        case state_recording:
+            document.body.style.backgroundColor = base03;
+            document.getElementById("status").style.color = base01;
+            document.getElementById("status").classList.add("pulse");
+            document.getElementById("stop-recording").style.backgroundColor = base02;
+            document.getElementById("stop-recording").style.color = base0;
+
+            document.getElementById("start-recording").style.display = "none";
+            document.getElementById("stop-recording").style.display = "block";
+            document.getElementById("status").innerHTML = "Recording...";
+            break;
+        case state_playing:
+            document.body.style.backgroundColor = base3;
+            document.getElementById("status").style.color = base1;
+            document.getElementById("status").classList.remove("pulse");
+
+            document.getElementById("start-recording").style.display = "block";
+            document.getElementById("stop-recording").style.display = "none";
+            document.getElementById("status").innerHTML = "Playing...";
+            break;
+    }
+}
+
+// solarized: http://ethanschoonover.com/solarized
+var base03  = "#002b36";
+var base02  = "#073642";
+var base01  = "#586e75";
+var base00  = "#657b83";
+var base0   = "#839496";
+var base1   = "#93a1a1";
+var base2   = "#eee8d5";
+var base3   = "#fdf6e3"; // light background
+var yellow  = "#b58900";
+var orange  = "#cb4b16";
+var red     = "#dc322f";
+var magenta = "#d33682";
+var violet  = "#6c71c4";
+var blue    = "#268bd2";
+var cyan    = "#2aa198";
+var green   = "#859900";
+
+var mediaRecorder;
+
+function initialize() {
+    navigator.mediaDevices.getUserMedia({audio: true})
+        .then(function(stream) {
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = function(e) {
+                var audio = document.querySelector('audio');
+                audio.src = window.URL.createObjectURL(e.data);
+                audio.play();
+                audio.addEventListener("ended", function() { drawState(state_waiting); });
+            }
+        })
+        .catch(function(err) {
+            console.log('The following gUM error occured: ' + err);
+        });
+    drawState(state_waiting);
+}
+
+function startRecording() {
+    // hack to allow playing on mobile
+    var audio = document.querySelector('audio');
+    audio.play();audio.pause();
+
+    mediaRecorder.start();
+    drawState(state_recording);
+}
+
+function stopRecording() {
+    mediaRecorder.stop();
+    drawState(state_playing);
+}
+
+initialize();
+
+        </script>
+    </body>
+</html>
