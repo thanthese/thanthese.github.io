@@ -106,16 +106,16 @@ var cyan    = "#2aa198";
 var green   = "#859900";
 
 var mediaRecorder;
+var audio = document.querySelector('audio');
 
 function initialize() {
+    audio.addEventListener("ended", function() { drawState(state_waiting); });
     navigator.mediaDevices.getUserMedia({audio: true})
         .then(function(stream) {
             mediaRecorder = new MediaRecorder(stream);
             mediaRecorder.ondataavailable = function(e) {
-                var audio = document.querySelector('audio');
                 audio.src = window.URL.createObjectURL(e.data);
                 audio.play();
-                audio.addEventListener("ended", function() { drawState(state_waiting); });
             }
         })
         .catch(function(err) {
@@ -126,8 +126,7 @@ function initialize() {
 
 function startRecording() {
     // hack to allow playing on mobile
-    var audio = document.querySelector('audio');
-    audio.play();audio.pause();
+    audio.play(); audio.pause();
 
     mediaRecorder.start();
     drawState(state_recording);
