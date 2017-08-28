@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Memorizer</title>
+    <style>
+        #main {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 2em 1em;
+            font-family: sans-serif;
+            font-size: 12pt;
+            text-align: left;
+            color: rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+<div id="main" onclick="next();"></div>
+<button onclick="reset();">Reset</button>
+<script>
+
+    let poem = `I leant upon a coppice gate
+      When Frost was spectre-grey,
+And Winter's dregs made desolate
+      The weakening eye of day.
+The tangled bine-stems scored the sky
+      Like strings of broken lyres,
+And all mankind that haunted nigh
+      Had sought their household fires.
+
+The land's sharp features seemed to be
+      The Century's corpse outleant,
+His crypt the cloudy canopy,
+      The wind his death-lament.
+The ancient pulse of germ and birth
+      Was shrunken hard and dry,
+And every spirit upon earth
+      Seemed fervourless as I.
+
+At once a voice arose among
+      The bleak twigs overhead
+In a full-hearted evensong
+      Of joy illimited;
+An aged thrush, frail, gaunt, and small,
+      In blast-beruffled plume,
+Had chosen thus to fling his soul
+      Upon the growing gloom.
+
+So little cause for carolings
+      Of such ecstatic sound
+Was written on terrestrial things
+      Afar or nigh around,
+That I could think there trembled through
+      His happy good-night air
+Some blessed Hope, whereof he knew
+      And I was unaware.`;
+
+    const poemLines = poem.replace(/ /g, "&nbsp;").split("\n");
+    let chunks = [];
+    for (let groupSize = 1; groupSize <= 6; ++groupSize) {
+        for (let startLine = 0; startLine < poemLines.length; startLine += groupSize) {
+            let display = "";
+            for (let g = 0; g < groupSize && startLine + g < poemLines.length; ++g) {
+                display += "&nbsp;" + poemLines[startLine + g] + "<br/>";
+            }
+            chunks.push(display);
+        }
+    }
+
+    if (!localStorage.chunkId) {
+        localStorage.chunkId = 0;
+    }
+    draw();
+
+    function next() {
+        if (localStorage.chunkId < chunks.length - 1) {
+            ++localStorage.chunkId;
+            draw();
+        }
+    }
+
+    function reset() {
+        localStorage.chunkId = 0;
+        draw();
+    }
+
+    function draw() {
+        document.getElementById("main").innerHTML = chunks[localStorage.chunkId];
+    }
+</script>
+</body>
+</html>
