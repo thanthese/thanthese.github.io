@@ -12,3 +12,7 @@ Will set it for 5 sets with 3 minutes rest between each one. I keep the urls rig
 
 The simplest possible recorder. First button press starts recording, second starts playback. No saving, looping, sharing -- no nothin'. Makes it easy to get feedback on your musical endeavors.
 
+
+# [Memorizer](https://thanthese.github.io/memorizer.html)
+
+Simple method for memorizing poems.
