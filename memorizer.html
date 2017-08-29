@@ -68,7 +68,7 @@ Some blessed Hope, whereof he knew
 
     function initApp(poem) {
         const lines = poem.replace(/ /g, "&nbsp;").split("\n");
-        for (let groupSize = 1; groupSize <= 6; ++groupSize) {
+        for (let groupSize = 1; groupSize <= 6 && groupSize < lines.length; ++groupSize) {
             for (let i = 0; i < lines.length; i += groupSize) {
                 chunks.push(makeChunk(lines.slice(i, i + groupSize)));
             }
