@@ -43,7 +43,9 @@
     <button onclick="action_cancelEditPoem();">Cancel</button>
     <button onclick="action_saveNewPoem();">Save</button>
 </div>
-<button onclick="clearLocalStorage();" hidden>Clear localstorage</button>
+<div id="dev-block" hidden>
+    <button onclick="clearLocalStorage();">Clear localstorage</button>
+</div>
 <script>
     let chunks = [];
 
@@ -54,6 +56,7 @@
             action_previousChunk();
         };
         if (!localStorage.poem || localStorage.poem.trim() === "") {
+            show("error");
             hide("poem-block");
             show("edit-block");
             return;
@@ -101,9 +104,9 @@
     }
 
     function action_editPoem() {
+        document.getElementById("edit-poem").value = localStorage.poem;
         hide("poem-block");
         show("edit-block");
-        document.getElementById("edit-poem").value = localStorage.poem;
     }
 
     function action_cancelEditPoem() {
