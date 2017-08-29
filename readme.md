@@ -15,4 +15,4 @@ The simplest possible recorder. First button press starts recording, second star
 
 # [Memorizer](https://thanthese.github.io/memorizer.html)
 
-Simple method for memorizing poems.
+Simple method for memorizing poems. Click the text to step forward, use browser back button to go back.

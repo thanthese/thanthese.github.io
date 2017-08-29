@@ -18,7 +18,7 @@
         }
 
         button {
-            margin: 0.5em 0.5em 0em 0em;
+            margin: 0.5em 0.5em 0 0;
             padding: 0.5em;
             font-size: 12pt;
         }
@@ -26,11 +26,9 @@
 </head>
 <body>
 <div id="main" onclick="next();"></div>
-<button onclick="previous();">Last</button>
-<button onclick="reset();">Reset</button>
 <script>
 
-    const poem = `I leant upon a coppice gate
+    let poem = `I leant upon a coppice gate
       When Frost was spectre-grey,
 And Winter's dregs made desolate
       The weakening eye of day.
@@ -69,27 +67,21 @@ Some blessed Hope, whereof he knew
     let chunks = [];
 
     function initApp(poem) {
-        const poemLines = poem.replace(/ /g, "&nbsp;").split("\n");
+        const lines = poem.replace(/ /g, "&nbsp;").split("\n");
         for (let groupSize = 1; groupSize <= 6; ++groupSize) {
-            chunks = chunks.concat(getChunksByGroupSize(poemLines, groupSize));
+            for (let i = 0; i < lines.length; i += groupSize) {
+                chunks.push(makeChunk(lines.slice(i, i + groupSize)));
+            }
         }
-        chunks = chunks.concat(getChunksByGroupSize(poemLines, poemLines.length));
+        chunks.push(makeChunk(lines));
         if (!localStorage.chunkId || localStorage.chunkId > chunks.length) {
             localStorage.chunkId = 0;
         }
         draw();
     }
 
-    function getChunksByGroupSize(lines, groupSize) {
-        let c = [];
-        for (let startLine = 0; startLine < lines.length; startLine += groupSize) {
-            let s = "";
-            for (let g = 0; g < groupSize && startLine + g < lines.length; ++g) {
-                s += "&nbsp;" + lines[startLine + g] + "<br/>";
-            }
-            c.push(s);
-        }
-        return c;
+    function makeChunk(lines) {
+        return lines.map(l => `&nbsp;${l}<br/>`).join("");
     }
 
     function next() {
@@ -106,13 +98,14 @@ Some blessed Hope, whereof he knew
         }
     }
 
-    function reset() {
-        localStorage.chunkId = 0;
-        draw();
-    }
-
     function draw() {
         document.getElementById("main").innerHTML = chunks[localStorage.chunkId];
+    }
+
+    history.pushState(null, null, null);
+    window.onpopstate = function () {
+        history.pushState(null, null, null);
+        previous();
     }
 
     initApp(poem);
