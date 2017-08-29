@@ -9,7 +9,7 @@
             font-family: sans-serif;
         }
 
-        #main {
+        #poem {
             background-color: rgba(0, 0, 0, 0.2);
             padding: 2em 1em;
             font-size: 12pt;
@@ -22,93 +22,126 @@
             padding: 0.5em;
             font-size: 12pt;
         }
+
+        #error {
+            background-color: rgba(255, 0, 0, 0.5);
+            color: black;
+            padding: 1em;
+        }
     </style>
 </head>
 <body>
-<div id="main" onclick="next();"></div>
+<div id="poem-block">
+    <div id="poem" onclick="action_nextChunk();"></div>
+    <button onclick="action_editPoem();">Edit poem</button>
+</div>
+<div id="edit-block">
+    <div id="error" style="display: none;">Enter poem below</div>
+    <div>
+        <textarea rows=10 cols=60 title="edit-poem" name="edit-poem" id="edit-poem"></textarea>
+    </div>
+    <button onclick="action_cancelEditPoem();">Cancel</button>
+    <button onclick="action_saveNewPoem();">Save</button>
+</div>
+<button onclick="clearLocalStorage();" hidden>Clear localstorage</button>
 <script>
-
-    let poem = `I leant upon a coppice gate
-      When Frost was spectre-grey,
-And Winter's dregs made desolate
-      The weakening eye of day.
-The tangled bine-stems scored the sky
-      Like strings of broken lyres,
-And all mankind that haunted nigh
-      Had sought their household fires.
-
-The land's sharp features seemed to be
-      The Century's corpse outleant,
-His crypt the cloudy canopy,
-      The wind his death-lament.
-The ancient pulse of germ and birth
-      Was shrunken hard and dry,
-And every spirit upon earth
-      Seemed fervourless as I.
-
-At once a voice arose among
-      The bleak twigs overhead
-In a full-hearted evensong
-      Of joy illimited;
-An aged thrush, frail, gaunt, and small,
-      In blast-beruffled plume,
-Had chosen thus to fling his soul
-      Upon the growing gloom.
-
-So little cause for carolings
-      Of such ecstatic sound
-Was written on terrestrial things
-      Afar or nigh around,
-That I could think there trembled through
-      His happy good-night air
-Some blessed Hope, whereof he knew
-      And I was unaware.`;
-
     let chunks = [];
 
-    function initApp(poem) {
-        const lines = poem.replace(/ /g, "&nbsp;").split("\n");
+    function initApp() {
+        history.pushState(null, "", "");
+        window.onpopstate = function () {
+            history.pushState(null, "", "");
+            action_previousChunk();
+        };
+        if (!localStorage.poem || localStorage.poem.trim() === "") {
+            hide("poem-block");
+            show("edit-block");
+            return;
+        }
+        setChunks(localStorage.poem);
+        if (!localStorage.chunkId || localStorage.chunkId > chunks.length) {
+            localStorage.chunkId = 0;
+        }
+        displayChunk();
+    }
+
+    function setChunks() {
+        const lines = localStorage.poem.replace(/ /g, "&nbsp;").split("\n");
+        chunks = [];
         for (let groupSize = 1; groupSize <= 6 && groupSize < lines.length; ++groupSize) {
             for (let i = 0; i < lines.length; i += groupSize) {
                 chunks.push(makeChunk(lines.slice(i, i + groupSize)));
             }
         }
         chunks.push(makeChunk(lines));
-        if (!localStorage.chunkId || localStorage.chunkId > chunks.length) {
-            localStorage.chunkId = 0;
-        }
-        draw();
     }
 
     function makeChunk(lines) {
         return lines.map(l => `&nbsp;${l}<br/>`).join("");
     }
 
-    function next() {
+    function action_nextChunk() {
         if (localStorage.chunkId < chunks.length - 1) {
             ++localStorage.chunkId;
-            draw();
+            displayChunk();
         }
     }
 
-    function previous() {
+    function action_previousChunk() {
         if (localStorage.chunkId > 0) {
             --localStorage.chunkId;
-            draw();
+            displayChunk();
         }
     }
 
-    function draw() {
-        document.getElementById("main").innerHTML = chunks[localStorage.chunkId];
+    function displayChunk() {
+        show("poem-block");
+        hide("edit-block");
+        document.getElementById("poem").innerHTML = chunks[localStorage.chunkId];
     }
 
-    history.pushState(null, null, null);
-    window.onpopstate = function () {
-        history.pushState(null, null, null);
-        previous();
+    function action_editPoem() {
+        hide("poem-block");
+        show("edit-block");
+        document.getElementById("edit-poem").value = localStorage.poem;
     }
 
-    initApp(poem);
+    function action_cancelEditPoem() {
+        if (!localStorage.poem || localStorage.poem.trim() === "") {
+            show("error");
+            return;
+        }
+        show("poem-block");
+        hide("edit-block");
+    }
+
+    function action_saveNewPoem() {
+        if (document.getElementById("edit-poem").value.trim() === "") {
+            show("error");
+            return;
+        }
+        hide("error");
+        localStorage.poem = document.getElementById("edit-poem").value;
+        localStorage.chunkId = 0;
+        setChunks();
+        displayChunk();
+    }
+
+    function show(id) {
+        document.getElementById(id).style.display = "";
+    }
+
+    function hide(id) {
+        document.getElementById(id).style.display = "none";
+    }
+
+    function clearLocalStorage() {
+        localStorage.chunkId = 0;
+        localStorage.poem = "";
+        initApp();
+    }
+
+    initApp();
 </script>
 </body>
 </html>
