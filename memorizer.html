@@ -12,7 +12,7 @@
         #poem {
             background-color: rgba(0, 0, 0, 0.1);
             padding: 2em 1em;
-            font-size: 12pt;
+            font-size: 11pt;
             text-align: left;
             color: rgba(0, 0, 0, 0.8);
         }
@@ -28,11 +28,17 @@
             color: black;
             padding: 1em;
         }
+
+        #word-count {
+            padding: 0.5em 0 0;
+            font-size: 9pt;
+        }
     </style>
 </head>
 <body>
 <div id="poem-block">
     <div id="poem" onclick="action_nextChunk();"></div>
+    <div id="word-count"></div>
     <button onclick="action_editPoem();">Edit poem</button>
 </div>
 <div id="edit-block">
@@ -101,6 +107,13 @@
         document.getElementById("poem").innerHTML = chunks[localStorage.chunkId];
         show("poem-block");
         hide("edit-block");
+        const id = parseInt(localStorage.chunkId, 10);
+        if (id === 0 || id === chunks.length - 1) {
+            const c = localStorage.poem.trim().split(/\s+/).length;
+            document.getElementById("word-count").innerHTML = "Word count: " + c;
+        } else {
+            document.getElementById("word-count").innerHTML = "";
+        }
     }
 
     function action_editPoem() {
