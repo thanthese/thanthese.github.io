@@ -75,7 +75,7 @@
     }
 
     function setChunks() {
-        const lines = localStorage.poem.replace(/ /g, "&nbsp;").split("\n");
+        const lines = localStorage.poem.split("\n").map(fixLeadingWhitespace);
         chunks = [];
         for (let groupSize = 1; groupSize <= 6 && groupSize < lines.length; ++groupSize) {
             for (let i = 0; i < lines.length; i += groupSize) {
@@ -85,8 +85,16 @@
         chunks.push(makeChunk(lines));
     }
 
+    function fixLeadingWhitespace(line) {
+        let m = line.match(/^(\s+)(.*)/);
+        if (!m) {
+            return line;
+        }
+        return m[1].replace(/\s/g, "&nbsp;") + m[2];
+    }
+
     function makeChunk(lines) {
-        return lines.map(l => `&nbsp;${l}<br/>`).join("");
+        return lines.map(l => `${l}&nbsp;<br/>`).join("");
     }
 
     function action_nextChunk() {
