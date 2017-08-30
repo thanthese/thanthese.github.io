@@ -18,7 +18,7 @@
         }
 
         button {
-            margin: 0em 0.5em 0.5em 0em;
+            margin: 0 0.5em 0.5em 0;
             padding: 0.5em 1em;
             font-size: 12pt;
         }
@@ -27,7 +27,12 @@
             background-color: rgba(255, 0, 0, 0.5);
             color: black;
             padding: 0.5em;
-            margin: 0em 0em 0.5em;
+            margin: 0 0 0.5em;
+        }
+
+        #percent {
+            background-color: rgba(0, 0, 0, 0.3);
+            height: 2px;
         }
 
         #word-count {
@@ -41,6 +46,7 @@
     <button onclick="action_previousChunk();">&lt;</button>
     <button onclick="action_editPoem();">Edit poem</button>
     <button onclick="action_nextChunk();">&gt;</button>
+    <div id="percent"></div>
     <div id="poem" onclick="action_nextChunk();"></div>
     <div id="word-count"></div>
 </div>
@@ -70,24 +76,26 @@
     }
 
     function setChunks() {
-        const lines = localStorage.poem.split("\n");
         chunks = [];
+        const lines = localStorage.poem.split("\n");
         for (let groupSize = 1; groupSize <= 6 && groupSize < lines.length; ++groupSize) {
-            for (let i = 0; i < lines.length; i += groupSize) {
-                chunks.push(makeChunk(lines.slice(i, i + groupSize)));
-            }
+            addChunksByGroupSize(lines, groupSize);
         }
         if (lines.length > 50) {
-            const groupSize = 18;
-            for (let i = 0; i < lines.length; i += groupSize) {
-                chunks.push(makeChunk(lines.slice(i, i + groupSize)));
-            }
+            addChunksByGroupSize(lines, 18);
         }
-        chunks.push(makeChunk(lines));
+        addChunksByGroupSize(lines, lines.length);
     }
 
-    function makeChunk(lines) {
-        return lines.map(fixWhitespace).join("<br/>");
+    function addChunksByGroupSize(lines, groupSize) {
+        let chunksCount = 0;
+        for (let l = 0; l < lines.length; l += groupSize) {
+            ++chunksCount;
+            chunks.push({
+                html: lines.slice(l, l + groupSize).map(fixWhitespace).join("<br/>"),
+                percent: chunksCount / Math.ceil(lines.length / groupSize) * 100
+            });
+        }
     }
 
     function fixWhitespace(line) {
@@ -116,13 +124,14 @@
     }
 
     function displayChunk() {
-        document.getElementById("poem").innerHTML = chunks[localStorage.chunkId];
+        document.getElementById("poem").innerHTML = chunks[localStorage.chunkId].html;
+        document.getElementById("percent").style.width = chunks[localStorage.chunkId].percent + "%";
         show("poem-block");
         hide("edit-block");
         const id = parseInt(localStorage.chunkId, 10);
         if (id === 0 || id === chunks.length - 1) {
             const c = localStorage.poem.trim().split(/\s+/).length;
-            document.getElementById("word-count").innerHTML = "Word count: " + c;
+            document.getElementById("word-count").innerHTML = c + " words";
         } else {
             document.getElementById("word-count").innerHTML = "";
         }
