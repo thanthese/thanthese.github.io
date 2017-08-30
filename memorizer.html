@@ -19,8 +19,8 @@
 
         button {
             margin: 0em 0.5em 0.5em 0em;
-            padding: 0.25em;
-            font-size: 10pt;
+            padding: 0.5em;
+            font-size: 12pt;
         }
 
         #error {
@@ -41,7 +41,7 @@
     <button onclick="action_previousChunk();">&lt;</button>
     <button onclick="action_editPoem();">Edit poem</button>
     <button onclick="action_nextChunk();">&gt;</button>
-    <div id="poem"></div>
+    <div id="poem" onclick="action_nextChunk();></div>
     <div id="word-count"></div>
 </div>
 <div id="edit-block">
