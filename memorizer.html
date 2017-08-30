@@ -18,15 +18,16 @@
         }
 
         button {
-            margin: 0.5em 0.5em 0 0;
-            padding: 0.5em;
-            font-size: 12pt;
+            margin: 0em 0.5em 0.5em 0em;
+            padding: 0.25em;
+            font-size: 10pt;
         }
 
         #error {
             background-color: rgba(255, 0, 0, 0.5);
             color: black;
-            padding: 1em;
+            padding: 0.5em;
+            margin: 0em 0em 0.5em;
         }
 
         #word-count {
@@ -37,30 +38,24 @@
 </head>
 <body>
 <div id="poem-block">
-    <div id="poem" onclick="action_nextChunk();"></div>
-    <div id="word-count"></div>
+    <button onclick="action_previousChunk();">&lt;</button>
     <button onclick="action_editPoem();">Edit poem</button>
+    <button onclick="action_nextChunk();">&gt;</button>
+    <div id="poem"></div>
+    <div id="word-count"></div>
 </div>
 <div id="edit-block">
-    <div id="error" style="display: none;">Enter poem below</div>
-    <div>
-        <textarea rows=10 cols=60 title="edit-poem" name="edit-poem" id="edit-poem"></textarea>
-    </div>
     <button onclick="action_cancelEditPoem();">Cancel</button>
     <button onclick="action_saveNewPoem();">Save</button>
-</div>
-<div id="dev-block" hidden>
-    <button onclick="clearLocalStorage();">Clear localstorage</button>
+    <div id="error" style="display: none;">Enter poem below</div>
+    <div>
+        <textarea rows=10 cols=60 title="" name="" id="edit-poem"></textarea>
+    </div>
 </div>
 <script>
     let chunks = [];
 
     function initApp() {
-        history.pushState(null, "", "");
-        window.onpopstate = function () {
-            history.pushState(null, "", "");
-            action_previousChunk();
-        };
         if (!localStorage.poem || localStorage.poem.trim() === "") {
             show("error");
             hide("poem-block");
@@ -75,9 +70,15 @@
     }
 
     function setChunks() {
-        const lines = localStorage.poem.split("\n").map(fixLeadingWhitespace);
+        const lines = localStorage.poem.split("\n");
         chunks = [];
         for (let groupSize = 1; groupSize <= 6 && groupSize < lines.length; ++groupSize) {
+            for (let i = 0; i < lines.length; i += groupSize) {
+                chunks.push(makeChunk(lines.slice(i, i + groupSize)));
+            }
+        }
+        if(lines.length > 50) {
+            const groupSize = 18;
             for (let i = 0; i < lines.length; i += groupSize) {
                 chunks.push(makeChunk(lines.slice(i, i + groupSize)));
             }
@@ -85,16 +86,19 @@
         chunks.push(makeChunk(lines));
     }
 
-    function fixLeadingWhitespace(line) {
+    function makeChunk(lines) {
+        return lines.map(fixWhitespace).join("<br/>");
+    }
+
+    function fixWhitespace(line) {
+        if(!line) {
+            return "&nbsp;";
+        }
         let m = line.match(/^(\s+)(.*)/);
         if (!m) {
             return line;
         }
         return m[1].replace(/\s/g, "&nbsp;") + m[2];
-    }
-
-    function makeChunk(lines) {
-        return lines.map(l => `${l}&nbsp;<br/>`).join("");
     }
 
     function action_nextChunk() {
@@ -157,12 +161,6 @@
 
     function hide(id) {
         document.getElementById(id).style.display = "none";
-    }
-
-    function clearLocalStorage() {
-        localStorage.chunkId = 0;
-        localStorage.poem = "";
-        initApp();
     }
 
     initApp();
