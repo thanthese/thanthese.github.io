@@ -41,7 +41,7 @@
     <button onclick="action_previousChunk();">&lt;</button>
     <button onclick="action_editPoem();">Edit poem</button>
     <button onclick="action_nextChunk();">&gt;</button>
-    <div id="poem" onclick="action_nextChunk();></div>
+    <div id="poem" onclick="action_nextChunk();"></div>
     <div id="word-count"></div>
 </div>
 <div id="edit-block">
@@ -77,7 +77,7 @@
                 chunks.push(makeChunk(lines.slice(i, i + groupSize)));
             }
         }
-        if(lines.length > 50) {
+        if (lines.length > 50) {
             const groupSize = 18;
             for (let i = 0; i < lines.length; i += groupSize) {
                 chunks.push(makeChunk(lines.slice(i, i + groupSize)));
@@ -91,7 +91,7 @@
     }
 
     function fixWhitespace(line) {
-        if(!line) {
+        if (!line) {
             return "&nbsp;";
         }
         let m = line.match(/^(\s+)(.*)/);
