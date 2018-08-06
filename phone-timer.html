@@ -15,10 +15,11 @@ body {
 		</style>
 		<script>
 
-			window.navigator.vibrate([100,30,100,30,100,30,200,30,200,30,200,30,100,30,100,30,100]); // Vibrate 'SOS' in Morse.
-  navigator.vibrate([500, 250, 500, 250, 500, 250, 500, 250, 500, 250, 500]);
+			console.log(window.navigator.vibrate([100,30,100,30,100,30,200,30,200,30,200,30,100,30,100,30,100])); // Vibrate 'SOS' in Morse.
+  console.log(navigator.vibrate([500, 250, 500, 250, 500, 250, 500, 250, 500, 250, 500]));
 
-
+window.navigator.vibrate(200);
+window.navigator.vibrate([200]);
 			function initialize() {
 				console.log("init")
 				window.navigator.vibrate([1000, 500, 1000]);
@@ -45,7 +46,7 @@ function getParameterByName(name) {
 	</head>
 	<body onload="initialize();">
 		<div id="">
-			Will vibrate
+			Will vibrate 2
 		</div>
 	</body>
 </html>
