@@ -15,38 +15,13 @@ body {
 		</style>
 		<script>
 
-			console.log(window.navigator.vibrate([100,30,100,30,100,30,200,30,200,30,200,30,100,30,100,30,100])); // Vibrate 'SOS' in Morse.
-  console.log(navigator.vibrate([500, 250, 500, 250, 500, 250, 500, 250, 500, 250, 500]));
+			navigator.vibrate([500]);
 
-window.navigator.vibrate(200);
-window.navigator.vibrate([200]);
-			function initialize() {
-				console.log("init")
-				window.navigator.vibrate([1000, 500, 1000]);
-			}
-
-function tickTimer(begin, end) {
-	if( new Date() >= end ) {
-		if(doVibrate) { window.navigator.vibrate([1000, 500, 1000]); }
-		return
-	}
-	setTimeout(function() { tickTimer(begin, end)}, checkIntervalMs);
-}
-
-function getParameterByName(name) {
-	// src: http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
-	name = name.replace(/[\[\]]/g, "\\$&");
-	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-		results = regex.exec(window.location.href);
-	if (!results) return null;
-	if (!results[2]) return '';
-	return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
 		</script>
 	</head>
-	<body onload="initialize();">
-		<div id="">
-			Will vibrate 2
+	<body>
+		<div>
+			Will vibrate 3
 		</div>
 	</body>
 </html>
