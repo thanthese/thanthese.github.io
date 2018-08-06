@@ -36,7 +36,7 @@
 
       <script>function example1() {
   // Vibrate for 500ms
-  navigator.vibrate([500]);
+		  setInterval(function() { navigator.vibrate([500]); console.log("buzz!"); }, 5000);
 }
 </script>
 
