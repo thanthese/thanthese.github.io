@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Weights Timer</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<style>
+
+body {
+	font-family: "DejaVu Sans Mono", "Dejavu Sans", monospace;
+	text-align: center;
+	margin: 0rem;
+	padding: 0rem;
+}
+		</style>
+		<script>
+
+			function initialize() {
+				window.navigator.vibrate([1000, 500, 1000]);
+			}
+
+function tickTimer(begin, end) {
+	if( new Date() >= end ) {
+		if(doVibrate) { window.navigator.vibrate([1000, 500, 1000]); }
+		return
+	}
+	setTimeout(function() { tickTimer(begin, end)}, checkIntervalMs);
+}
+
+function getParameterByName(name) {
+	// src: http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+	name = name.replace(/[\[\]]/g, "\\$&");
+	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		results = regex.exec(window.location.href);
+	if (!results) return null;
+	if (!results[2]) return '';
+	return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+		</script>
+	</head>
+	<body onload="initialize();">
+		<div id="">
+			Hello
+		</div>
+	</body>
+</html>
