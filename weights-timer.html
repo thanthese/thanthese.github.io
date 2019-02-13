@@ -51,7 +51,7 @@ var audio = new Audio("media/glass-ping.mp3");
 
 // clock
 var restSecs = 0;
-var checkIntervalMs = 1000;
+var checkIntervalMs = 10;
 
 // sets count
 var finishedSets = 0;
@@ -69,13 +69,13 @@ function initialize() {
 }
 
 function event_finishedSet() {
-    audio.play(); audio.pause();
     finishedSets++;
-    if( finishedSets == totalSets ) {
+    if( finishedSets >= totalSets ) {
         drawState(state_workoutDone);
         return
     }
     drawState(state_resting);
+    audio.play(); audio.pause(); // hack to load sound
     begin = new Date();
     end = new Date(begin.getTime() + restSecs * 1000);
     tickTimer(begin, end);
