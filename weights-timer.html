@@ -1,185 +1,281 @@
 <!doctype html>
 <html>
-    <head>
-        <title>Weights Timer</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
 
-body {
-    /*font-family: "DejaVu Sans Mono", "Dejavu Sans", monospace;*/
-    font-family: "Dejavu Sans", monospace;
-    text-align: center;
-    margin: 0rem;
-    padding: 0rem;
-    background-color: #fdf6e3;
-    color: #657b83;
-}
+<head>
+    <title>Weights Timer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: "Dejavu Sans", monospace;
+            text-align: center;
+            margin: 0rem;
+            padding: 0rem;
+            background-color: #fdf6e3;
+            color: #657b83;
+        }
 
-#sets-counter {
-    font-size: 5rem;
-    margin-top: 0.25rem;
-    color: #93a1a1;
-}
-#finished-set-button {
-    font-size: 4rem;
-    margin: 0.25rem 0rem;
-    padding: 6rem 0rem;
-    background-color: #eee8d5;
-    cursor: pointer;
-}
-#time-remaining {
-    font-size: 8rem;
-    margin: 0.25rem 0rem;
-    padding: 6rem 0rem;
-}
-#workout-done {
-    color: #859900;
-    font-weight: bold;
-    font-size: 8rem;
-    margin: 0.25rem 0rem;
-    padding: 6rem 0rem;
-}
+        #sets-counter {
+            font-size: 5rem;
+            margin-top: 0.25rem;
+            color: #93a1a1;
+        }
 
-        </style>
-        <script>
+        #finished-set-button {
+            font-size: 4rem;
+            margin: 0.25rem 0rem;
+            padding: 6rem 0rem;
+            background-color: #eee8d5;
+            cursor: pointer;
+        }
 
-// settings
-var doVibrate = false;
-var doSound = true;
+        #time-remaining {
+            font-size: 8rem;
+            margin: 0.25rem 0rem;
+            padding: 6rem 0rem;
+        }
 
-// notifications
-var vibratePattern = [1000, 500, 1000];
-var audio = new Audio("media/glass-ping.mp3");
+        #workout-done {
+            color: #859900;
+            font-weight: bold;
+            font-size: 8rem;
+            margin: 0.25rem 0rem;
+            padding: 6rem 0rem;
+        }
 
-// clock
-var restSecs = 0;
-var checkIntervalMs = 10;
+        #per-side {
+            color: #93a1a1;
+            margin: 1rem;
+        }
 
-// sets count
-var finishedSets = 0;
-var totalSets = 0;
+        #BBB {
+            margin: 1rem auto;
+        }
 
-// states
-var state_doingSet = 1;
-var state_resting = 2;
-var state_workoutDone = 3;
+        td {
+            text-align: right;
+            padding: 0.25rem 2rem;
+        }
+    </style>
+    <script>
+        // notifications
+        var audio = new Audio("media/glass-ping.mp3");
 
-function initialize() {
-    totalSets = getParameterByName("s") || 4;
-    restSecs = getParameterByName("r") * 60 || 5;
-    drawState(state_doingSet);
-}
+        // clock
+        var restSecs = 0;
+        var checkIntervalMs = 10;
 
-function event_finishedSet() {
-    finishedSets++;
-    if( finishedSets >= totalSets ) {
-        drawState(state_workoutDone);
-        return
-    }
-    drawState(state_resting);
-    audio.play(); audio.pause(); // hack to load sound
-    begin = new Date();
-    end = new Date(begin.getTime() + restSecs * 1000);
-    tickTimer(begin, end);
-}
+        // sets count
+        var finishedSets = 0;
+        var totalSets = 0;
 
-function tickTimer(begin, end) {
-    setHtml("time-remaining", prettyTime(end));
-    if( new Date() >= end ) {
-        drawState(state_doingSet);
-        if(doSound) { audio.play(); }
-        if(doVibrate) { window.navigator.vibrate(vibratePattern); }
-        return
-    }
-    setTimeout(function() { tickTimer(begin, end)}, checkIntervalMs);
-}
+        // states
+        var state_doingSet = 1;
+        var state_resting = 2;
+        var state_workoutDone = 3;
 
-function prettyTime(end) {
-    var totalSecs = Math.ceil((end - new Date())/1000);
-    var secs = totalSecs % 60;
-    var mins = (totalSecs - secs)/60;
-    if( secs < 10 ) {
-        secs = "0" + secs;
-    }
-    return mins + ":" + secs;
-}
+        function initialize() {
+            test();
+            totalSets = getParameterByName("s") || 10;
+            restSecs = getParameterByName("r") * 60 || 0.1;
+            sideWeight = getParameterByName("sw") || 60;
+            makeComplexTable();
+            drawState(state_doingSet);
+        }
 
-// solarized: http://ethanschoonover.com/solarized
-var base03  = "#002b36";
-var base02  = "#073642";
-var base01  = "#586e75";
-var base00  = "#657b83";
-var base0   = "#839496";
-var base1   = "#93a1a1";
-var base2   = "#eee8d5";
-var base3   = "#fdf6e3";
-var yellow  = "#b58900";
-var orange  = "#cb4b16";
-var red     = "#dc322f";
-var magenta = "#d33682";
-var violet  = "#6c71c4";
-var blue    = "#268bd2";
-var cyan    = "#2aa198";
-var green   = "#859900";
+        function event_finishedSet() {
+            finishedSets++;
+            if (finishedSets >= totalSets) {
+                drawState(state_workoutDone);
+                return
+            }
+            drawState(state_resting);
+            audio.play();
+            audio.pause(); // hack to load sound
+            begin = new Date();
+            end = new Date(begin.getTime() + restSecs * 1000);
+            tickTimer(begin, end);
+        }
 
-function drawState(state) {
-    setHtml("finished-sets", finishedSets)
-    setHtml("total-sets", totalSets);
-    hide("finished-set-button")
-    hide("time-remaining");
-    hide("workout-done");
-    switch(state) {
-        case state_doingSet:
-            show("finished-set-button")
-            document.body.style.backgroundColor = base3;
-            document.body.style.color = base00;
-            document.getElementById("sets-counter").style.color = base1;
-            break;
-        case state_resting:
-            show("time-remaining");
-            document.body.style.backgroundColor = base03;
-            document.body.style.color = base0;
-            document.getElementById("sets-counter").style.color = base01;
-            break;
-        case state_workoutDone:
-            show("workout-done");
-            document.body.style.backgroundColor = base3;
-            document.body.style.color = base00;
-            document.getElementById("sets-counter").style.color = base1;
-            break;
-    }
-}
+        function tickTimer(begin, end) {
+            setHtml("time-remaining", prettyTime(end));
+            if (new Date() >= end) {
+                drawState(state_doingSet);
+                audio.play();
+                return
+            }
+            setTimeout(function() {
+                tickTimer(begin, end)
+            }, checkIntervalMs);
+        }
 
-function hide(id) {
-    document.getElementById(id).style.display = 'none';
-}
+        function prettyTime(end) {
+            var totalSecs = Math.ceil((end - new Date()) / 1000);
+            var secs = totalSecs % 60;
+            var mins = (totalSecs - secs) / 60;
+            if (secs < 10) {
+                secs = "0" + secs;
+            }
+            return mins + ":" + secs;
+        }
 
-function show(id) {
-    document.getElementById(id).style.display = 'block';
-}
+        // solarized: http://ethanschoonover.com/solarized
+        var base03 = "#002b36";
+        var base02 = "#073642";
+        var base01 = "#586e75";
+        var base00 = "#657b83";
+        var base0 = "#839496";
+        var base1 = "#93a1a1";
+        var base2 = "#eee8d5";
+        var base3 = "#fdf6e3";
+        var yellow = "#b58900";
+        var orange = "#cb4b16";
+        var red = "#dc322f";
+        var magenta = "#d33682";
+        var violet = "#6c71c4";
+        var blue = "#268bd2";
+        var cyan = "#2aa198";
+        var green = "#859900";
 
-function setHtml(id, html) {
-    document.getElementById(id).innerHTML = html;
-}
+        function drawState(state) {
+            setHtml("finished-sets", finishedSets)
+            setHtml("total-sets", totalSets);
+            setHtml("initial-weight-per-side", sideWeight);
+            hide("finished-set-button")
+            hide("time-remaining");
+            hide("workout-done");
+            hide("simple-weight-per-side");
+            hide("complex-weight-per-side");
+            switch (state) {
+                case state_doingSet:
+                    show("finished-set-button")
+                    document.body.style.backgroundColor = base3;
+                    document.body.style.color = base00;
+                    document.getElementById("sets-counter").style.color = base1;
+                    break;
+                case state_resting:
+                    show("time-remaining");
+                    document.body.style.backgroundColor = base03;
+                    document.body.style.color = base0;
+                    document.getElementById("sets-counter").style.color = base01;
+                    break;
+                case state_workoutDone:
+                    show("workout-done");
+                    document.body.style.backgroundColor = base3;
+                    document.body.style.color = base00;
+                    document.getElementById("sets-counter").style.color = base1;
+                    break;
+            }
+            if (totalSets == 10) {
+                if (finishedSets < 5) {
+                    show("simple-weight-per-side");
+                } else if (finishedSets < 10) {
+                    show("complex-weight-per-side");
+                }
+            }
+        }
 
-function getParameterByName(name) {
-    // src: http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(window.location.href);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-        </script>
-    </head>
-    <body onload="initialize();">
-        <div id="sets-counter">
-            <span id="finished-sets">0</span>/<span id="total-sets"></span>
+        function hide(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function show(id) {
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function setHtml(id, html) {
+            document.getElementById(id).innerHTML = html;
+        }
+
+        function getParameterByName(name) {
+            // src: http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(window.location.href);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+
+        function makeComplexTable() {
+            var table = document.getElementById("BBB");
+            for (var s = 30; s <= 70; s += 5) {
+                var newWeight = calcSide(s, sideWeight).toFixed(2);
+                var row = table.insertRow();
+                row.insertCell().appendChild(document.createTextNode(s));
+                row.insertCell().appendChild(
+                    document.createTextNode(newWeight));
+            }
+        }
+
+        function calcSide(side, percent) {
+            var newSide = (total(side) * percent / 100 - 45) / 2
+            return Math.max(0, Math.floor(newSide / 1.25) * 1.25)
+        }
+
+        function total(side) {
+            return side * 2.0 + 45.0
+        }
+
+        function test() {
+            var errors = 0;
+            var tests = 0;
+            var cases = [
+                [0, 50, 0],
+                [10, 55, 0],
+                [0, 60, 0],
+
+                [30, 50, 3.75],
+                [30, 55, 6.25],
+                [30, 60, 8.75],
+
+                [40, 50, 8.75],
+                [40, 55, 11.25],
+                [40, 60, 15],
+
+                [45, 50, 11.25],
+                [45, 55, 13.75],
+                [45, 60, 17.5],
+
+                [100, 50, 38.75],
+                [100, 55, 43.75],
+                [100, 60, 50]
+            ];
+            for (let c of cases) {
+                tests++;
+                var got = calcSide(c[0], c[1])
+                if (c[2] != got) {
+                    errors++;
+                    console.error(`${c[1]}% of ${c[0]} on a side should be ${c[2]}, got ${got}.`);
+                }
+            }
+            if (errors == 0) {
+                console.log(`${tests} tests passed`);
+            }
+        }
+    </script>
+</head>
+
+<body onload="initialize();">
+    <div id="sets-counter">
+        <span id="finished-sets">0</span>/<span id="total-sets"></span>
+    </div>
+    <div id="finished-set-button" onclick="event_finishedSet();">Finished set</div>
+    <div id="time-remaining"></div>
+    <div id="workout-done">Done</div>
+    <div id="per-side">
+        <div id="simple-weight-per-side">
+            lbs/side: <span id="initial-weight-per-side"></span>
         </div>
-        <div id="finished-set-button" onclick="event_finishedSet();">Finished set</div>
-        <div id="time-remaining"></div>
-        <div id="workout-done">Done</div>
-    </body>
+        <div id="complex-weight-per-side">
+            <table id="BBB">
+                <tr>
+                    <th>%</th>
+                    <th>lbs/side</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+
 </html>
