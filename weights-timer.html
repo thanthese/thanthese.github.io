@@ -77,7 +77,7 @@
         function initialize() {
             test();
             totalSets = getParameterByName("s") || 10;
-            restSecs = getParameterByName("r") * 60 || 1;
+            restSecs = getParameterByName("r") || 90;
             sideWeight = getParameterByName("sw") || 60;
             makeComplexTable();
             drawState(state_doingSet);
