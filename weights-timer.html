@@ -230,7 +230,7 @@
                 return `${w}`;
             }
             var times = Math.floor(w / 45);
-            var rem = w % 45;
+            var rem = (w % 45).toFixed(2);
             if (times == 1) {
                 return `45 + ${rem}`;
             }
