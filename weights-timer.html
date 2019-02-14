@@ -231,6 +231,9 @@
             }
             var times = Math.floor(w / 45);
             var rem = w % 45;
+            if (times == 1) {
+                return `45 + ${rem}`;
+            }
             return `45x${times} + ${rem}`;
         }
 
