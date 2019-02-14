@@ -77,7 +77,7 @@
         function initialize() {
             test();
             totalSets = getParameterByName("s") || 10;
-            restSecs = getParameterByName("r") * 60 || 0.1;
+            restSecs = getParameterByName("r") * 60 || 1;
             sideWeight = getParameterByName("sw") || 60;
             makeComplexTable();
             drawState(state_doingSet);
@@ -166,7 +166,7 @@
                     document.getElementById("sets-counter").style.color = base1;
                     break;
             }
-            if (totalSets == 10) {
+            if (totalSets == 10 && state != state_workoutDone) {
                 if (finishedSets < 5) {
                     show("simple-weight-per-side");
                 } else if (finishedSets < 10) {
