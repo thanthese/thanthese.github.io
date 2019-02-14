@@ -77,8 +77,8 @@
         function initialize() {
             test();
             totalSets = getParameterByName("s") || 10;
-            restSecs = getParameterByName("r") || 90;
-            sideWeight = getParameterByName("sw") || 0;
+            restSecs = getParameterByName("r") || .1;
+            sideWeight = getParameterByName("sw") || 80;
             makeComplexTable();
             drawState(state_doingSet);
         }
@@ -141,6 +141,7 @@
             setHtml("finished-sets", finishedSets)
             setHtml("total-sets", totalSets);
             setHtml("initial-weight-per-side", prettyWeight(sideWeight));
+            setHtml("initial-weight-total", total(sideWeight));
             hide("finished-set-button")
             hide("time-remaining");
             hide("workout-done");
@@ -202,18 +203,34 @@
         function makeComplexTable() {
             var table = document.getElementById("BBB");
 
-            function makeRow(p) {
+            for (var p = 30; p <= 70; p += 5) {
                 var newWeight = calcSide(sideWeight, p).toFixed(2);
                 var row = table.insertRow();
                 row.insertCell().appendChild(document.createTextNode(p));
                 row.insertCell().appendChild(
                     document.createTextNode(prettyWeight(newWeight)));
+                row.insertCell().appendChild(document.createTextNode(
+                    total(newWeight).toFixed(2)));
             }
-
-            for (var p = 30; p <= 70; p += 5) {
-                makeRow(p);
+            if (true) {
+                var p = 100;
+                var newWeight = calcSide(sideWeight, p).toFixed(2);
+                var row = table.insertRow();
+                row.insertCell().appendChild(document.createTextNode(p));
+                row.insertCell().appendChild(
+                    document.createTextNode(newWeight));
+                row.insertCell().appendChild(document.createTextNode(
+                    total(newWeight).toFixed(2)));
             }
-            makeRow(100);
+            for (var p = -20; p <= -10; p += 5) {
+                var newWeight = calcSide(sideWeight, p + 100).toFixed(2);
+                var row = table.insertRow();
+                row.insertCell().appendChild(document.createTextNode(p));
+                row.insertCell().appendChild(
+                    document.createTextNode(newWeight));
+                row.insertCell().appendChild(document.createTextNode(
+                    total(newWeight).toFixed(2)));
+            }
         }
 
         function calcSide(side, percent) {
@@ -292,12 +309,14 @@
     <div id="per-side">
         <div id="simple-weight-per-side">
             lbs/side: <span id="initial-weight-per-side"></span>
+            (total <span id="initial-weight-total"></span>)
         </div>
         <div id="complex-weight-per-side">
             <table id="BBB">
                 <tr>
                     <th>%</th>
                     <th>lbs/side</th>
+                    <th>(total)</th>
                 </tr>
             </table>
         </div>
