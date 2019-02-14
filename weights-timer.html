@@ -199,13 +199,19 @@
 
         function makeComplexTable() {
             var table = document.getElementById("BBB");
-            for (var s = 30; s <= 70; s += 5) {
-                var newWeight = calcSide(s, sideWeight).toFixed(2);
+
+            function makeRow(p) {
+                var newWeight = calcSide(sideWeight, p).toFixed(2);
                 var row = table.insertRow();
-                row.insertCell().appendChild(document.createTextNode(s));
+                row.insertCell().appendChild(document.createTextNode(p));
                 row.insertCell().appendChild(
                     document.createTextNode(newWeight));
             }
+
+            for (var p = 30; p <= 70; p += 5) {
+                makeRow(p);
+            }
+            makeRow(100);
         }
 
         function calcSide(side, percent) {
@@ -236,6 +242,12 @@
                 [45, 50, 11.25],
                 [45, 55, 13.75],
                 [45, 60, 17.5],
+
+                [20, 100, 20],
+                [30, 100, 30],
+                [40, 100, 40],
+                [50, 100, 50],
+                [60, 100, 60],
 
                 [100, 50, 38.75],
                 [100, 55, 43.75],
