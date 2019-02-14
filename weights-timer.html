@@ -78,7 +78,7 @@
             test();
             totalSets = getParameterByName("s") || 10;
             restSecs = getParameterByName("r") || 90;
-            sideWeight = getParameterByName("sw") || 60;
+            sideWeight = getParameterByName("sw") || 0;
             makeComplexTable();
             drawState(state_doingSet);
         }
@@ -140,7 +140,7 @@
         function drawState(state) {
             setHtml("finished-sets", finishedSets)
             setHtml("total-sets", totalSets);
-            setHtml("initial-weight-per-side", sideWeight);
+            setHtml("initial-weight-per-side", prettyWeight(sideWeight));
             hide("finished-set-button")
             hide("time-remaining");
             hide("workout-done");
@@ -166,7 +166,9 @@
                     document.getElementById("sets-counter").style.color = base1;
                     break;
             }
-            if (totalSets == 10 && state != state_workoutDone) {
+            if (totalSets == 10 &&
+                sideWeight != 0 &&
+                state != state_workoutDone) {
                 if (finishedSets < 5) {
                     show("simple-weight-per-side");
                 } else if (finishedSets < 10) {
@@ -205,7 +207,7 @@
                 var row = table.insertRow();
                 row.insertCell().appendChild(document.createTextNode(p));
                 row.insertCell().appendChild(
-                    document.createTextNode(newWeight));
+                    document.createTextNode(prettyWeight(newWeight)));
             }
 
             for (var p = 30; p <= 70; p += 5) {
@@ -221,6 +223,15 @@
 
         function total(side) {
             return side * 2.0 + 45.0
+        }
+
+        function prettyWeight(w) {
+            if (w <= 45) {
+                return `${w}`;
+            }
+            var times = Math.floor(w / 45);
+            var rem = w % 45;
+            return `45x${times} + ${rem}`;
         }
 
         function test() {
