@@ -4,11 +4,11 @@ I host my static sites here. Active projects:
 
 The simplest possible timer. A url like this:
 
-    https://thanthese.github.io/weights-timer.html?s=5&r=3
+    https://thanthese.github.io/weights-timer.html?s=5&r=180
 
 Will set it for 5 sets with 3 minutes rest between each one. I keep the urls
 right in my [workflowy](https://workflowy.com) exercise list. Very lightweight
-workout app.
+workout app. You can add a `sw` option for very specialized "side weight" features.
 
 # [Echo-er](https://thanthese.github.io/echo-er.html)
 
