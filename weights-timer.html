@@ -76,7 +76,7 @@
 
         function initialize() {
             test();
-            totalSets = getParameterByName("s") || 10;
+            totalSets = getParameterByName("s") || 5;
             restSecs = getParameterByName("r") || 90;
             sideWeight = getParameterByName("sw") || 0;
             makeComplexTable();
@@ -104,7 +104,7 @@
                 audio.play();
                 return
             }
-            setTimeout(function() {
+            setTimeout(function () {
                 tickTimer(begin, end)
             }, checkIntervalMs);
         }
@@ -167,14 +167,9 @@
                     document.getElementById("sets-counter").style.color = base1;
                     break;
             }
-            if (totalSets == 10 &&
-                sideWeight != 0 &&
-                state != state_workoutDone) {
-                if (finishedSets < 5) {
-                    show("simple-weight-per-side");
-                } else if (finishedSets < 10) {
-                    show("complex-weight-per-side");
-                }
+            if (totalSets == 5 && sideWeight != 0) {
+                show("simple-weight-per-side");
+                show("complex-weight-per-side");
             }
         }
 
@@ -200,40 +195,29 @@
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
 
-        function makeComplexTable() {
-            var table = document.getElementById("BBB");
-
-            for (var p = 30; p <= 70; p += 5) {
-                var newWeight = calcSide(sideWeight, p).toFixed(2);
-                var row = table.insertRow();
-                row.insertCell().appendChild(document.createTextNode(p));
-                row.insertCell().appendChild(
-                    document.createTextNode(prettyWeight(newWeight)));
-                row.insertCell().appendChild(document.createTextNode(
-                    total(newWeight).toFixed(2)));
-            }
-            if (true) {
-                var p = 100;
-                var newWeight = calcSide(sideWeight, p).toFixed(2);
-                var row = table.insertRow();
-                row.insertCell().appendChild(document.createTextNode(p));
-                row.insertCell().appendChild(
-                    document.createTextNode(newWeight));
-                row.insertCell().appendChild(document.createTextNode(
-                    total(newWeight).toFixed(2)));
-            }
-            for (var p = -20; p <= -10; p += 5) {
-                var newWeight = calcSide(sideWeight, p + 100).toFixed(2);
-                var row = table.insertRow();
-                row.insertCell().appendChild(document.createTextNode(p));
-                row.insertCell().appendChild(
-                    document.createTextNode(newWeight));
-                row.insertCell().appendChild(document.createTextNode(
-                    total(newWeight).toFixed(2)));
+        function addRowTo(tableId, ...cells) {
+            var table = document.getElementById(tableId);
+            var row = table.insertRow();
+            for (const c of cells) {
+                row.insertCell().appendChild(document.createTextNode(c));
             }
         }
 
-        function calcSide(side, percent) {
+        function makeComplexTable() {
+            for (var p = 30; p <= 70; p += 5) {
+                var w = changeSide(sideWeight, p).toFixed(2);
+                addRowTo("BBB", p, prettyWeight(w), total(w).toFixed(2));
+            }
+            addRowTo("BBB", 100, w, total(w).toFixed(2));
+            for (var p = -20; p <= -10; p += 5) {
+                var w = changeSide(sideWeight, p + 100).toFixed(2);
+                addRowTo("BBB", p, w, total(w).toFixed(2));
+            }
+        }
+
+        // give a new side weight such that the total weight on the bar
+        // is percent of the starting total weight
+        function changeSide(side, percent) {
             var newSide = (total(side) * percent / 100 - 45) / 2
             return Math.max(0, Math.floor(newSide / 1.25) * 1.25)
         }
@@ -286,7 +270,7 @@
             ];
             for (let c of cases) {
                 tests++;
-                var got = calcSide(c[0], c[1])
+                var got = changeSide(c[0], c[1])
                 if (c[2] != got) {
                     errors++;
                     console.error(`${c[1]}% of ${c[0]} on a side should be ${c[2]}, got ${got}.`);
